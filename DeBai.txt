@@ -1,0 +1,3 @@
+Tìm hiểu các thuật toán nhân ma trận, viết chương trình dể hiện thực các thuật toán này, so sánh tính hiệu quả, viết report, báo cáo.
+Thực nghiệm trên ít nhất 10 ma trận có kích thước lớn >=5000 phần tử.
+Report tập trung vào kết quả và sự phân tích lí do tại sao có sự chênh lệch, nguyên nhân...
