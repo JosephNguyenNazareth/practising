@@ -114,65 +114,8 @@ public:
   }
   void StrassenMultiplyCore(const matrix &MatA, const matrix &MatB) {
     matrix MatC(MatB.row, MatB.row);
-    if (MatB.row == 2) { // base case
-      /*T *P = new T[7]; // delare an array of <T> type
-      // 7 mystery equation of Strassen???
-      P[0] = MatA.data[0][0] * (MatB.data[0][1] - MatB.data[1][1]);
-      P[1] = (MatA.data[0][0] + MatA.data[0][1]) * MatB.data[1][1];
-      P[2] = (MatA.data[1][0] + MatA.data[1][1]) * MatB.data[0][0];
-      P[3] = MatA.data[1][1] * (MatB.data[1][0] - MatB.data[0][0]);
-      P[4] = (MatA.data[0][0] + MatA.data[1][1]) *
-             (MatB.data[0][0] + MatB.data[1][1]);
-      P[5] = (MatA.data[0][1] - MatA.data[1][1]) *
-             (MatB.data[1][0] + MatB.data[1][1]);
-      P[6] = (MatA.data[0][0] - MatA.data[1][0]) *
-             (MatB.data[0][0] + MatB.data[0][1]);
-
-      // resize the matrix
-      this->SetSize(2, 2);
-
-      // assign value to base result matrix
-      this->data[0][0] = P[4] + P[3] - P[1] + P[5]; // top left
-      this->data[0][1] = P[0] + P[1]; // top right
-      this->data[1][0] = P[2] + P[3]; // bottom left
-      this->data[1][1] = P[4] + P[0] - P[2] - P[6]; // bottom right*/
-
-      // delete[] P;
-      // resize the matrix
-      this->SetSize(2, 2);
-
-      T *P = new T;
-      // p0
-      *P = MatA.data[0][0] * (MatB.data[0][1] - MatB.data[1][1]);
-      this->data[0][1] = *P;
-      this->data[1][1] = *P;
-      // p1
-      *P = (MatA.data[0][0] + MatA.data[0][1]) * MatB.data[1][1];
-      this->data[0][0] = -*P;
-      this->data[0][1] = this->data[0][1] + *P;
-      // p2
-      *P = (MatA.data[1][0] + MatA.data[1][1]) * MatB.data[0][0];
-      this->data[1][0] = *P;
-      this->data[1][1] = this->data[1][1] - *P;
-      // p3
-      *P = MatA.data[1][1] * (MatB.data[1][0] - MatB.data[0][0]);
-      this->data[0][0] = this->data[0][0] + *P;
-      this->data[1][0] = this->data[1][0] + *P;
-      // p4
-      *P = (MatA.data[0][0] + MatA.data[1][1]) *
-           (MatB.data[0][0] + MatB.data[1][1]);
-      this->data[0][0] = this->data[0][0] + *P;
-      this->data[1][1] = this->data[1][1] + *P;
-      // p5
-      *P = (MatA.data[0][1] - MatA.data[1][1]) *
-           (MatB.data[1][0] + MatB.data[1][1]);
-      this->data[0][0] = this->data[0][0] + *P;
-      // p6
-      *P = (MatA.data[0][0] - MatA.data[1][0]) *
-           (MatB.data[0][0] + MatB.data[0][1]);
-      this->data[1][1] = this->data[1][1] + *P;
-
-      delete P; P = NULL;
+    if (MatB.row == 1) { // base case
+      this->data[0][0] = MatA.data[0][0] * MatB.data[0][0];
     } else {
       unsigned int newSize = MatB.row / 2;
       matrix MatB11(newSize, newSize), MatB12(newSize, newSize),
@@ -212,38 +155,38 @@ public:
 
       // according to Strassen work, he found there are 7 equations to calculate
       // that is able to multiply matrix
-      matrix P0(newSize, newSize), P1(newSize, newSize), P2(newSize, newSize),
-          P3(newSize, newSize), P4(newSize, newSize), P5(newSize, newSize),
-          P6(newSize, newSize);
+      matrix *P = new matrix[7];
+      for (unsigned int kitta = 0; kitta < 7; kitta++)
+        P[kitta].SetSize(newSize, newSize);
 
       // P0 = A11*(B12-B22) //
-      P0.StrassenMultiplyCore(MatA11, MatB12.Subtract(MatB22));
+      P[0].StrassenMultiplyCore(MatA11, MatB12.Subtract(MatB22));
       // P1 = A11*(A11+B22) //
-      P1.StrassenMultiplyCore(MatA11.Add(MatA12), MatB22);
+      P[1].StrassenMultiplyCore(MatA11.Add(MatA12), MatB22);
       // P2 = A21*(A22+B11) //
-      P2.StrassenMultiplyCore(MatA21.Add(MatA22), MatB11);
+      P[2].StrassenMultiplyCore(MatA21.Add(MatA22), MatB11);
       // P3 = A22*(B21-B11) //
-      P3.StrassenMultiplyCore(MatA22, MatB21.Subtract(MatB11));
+      P[3].StrassenMultiplyCore(MatA22, MatB21.Subtract(MatB11));
       // P4 = (A11+A22)*(B11+B22) //
-      P4.StrassenMultiplyCore(MatA11.Add(MatA22), MatB11.Add(MatB22));
+      P[4].StrassenMultiplyCore(MatA11.Add(MatA22), MatB11.Add(MatB22));
       // P5 = (A12-A22)*(B21-B22) //
-      P5.StrassenMultiplyCore(MatA12.Subtract(MatA22), MatB21.Add(MatB22));
+      P[5].StrassenMultiplyCore(MatA12.Subtract(MatA22), MatB21.Add(MatB22));
       // P6 = (A11-A21)*(B11+B12) //
-      P6.StrassenMultiplyCore(MatA11.Subtract(MatA21), MatB11.Add(MatB12));
+      P[6].StrassenMultiplyCore(MatA11.Subtract(MatA21), MatB11.Add(MatB12));
 
       // 4 submatrices of result matrix are calculated as below
       // how did Strassen think?
-      MatC11 = P4.Add(P3);
-      MatC11 = MatC11.Subtract(P1);
-      MatC11 = MatC11.Add(P5);
+      MatC11 = P[4].Add(P[3]);
+      MatC11 = MatC11.Subtract(P[1]);
+      MatC11 = MatC11.Add(P[5]);
 
-      MatC12 = P0.Add(P1);
+      MatC12 = P[0].Add(P[1]);
 
-      MatC21 = P2.Add(P3);
+      MatC21 = P[2].Add(P[3]);
 
-      MatC22 = P4.Add(P0);
-      MatC22 = MatC22.Subtract(P2);
-      MatC22 = MatC22.Subtract(P6);
+      MatC22 = P[4].Add(P[0]);
+      MatC22 = MatC22.Subtract(P[2]);
+      MatC22 = MatC22.Subtract(P[6]);
 
       // assign 4 submatrices to the result matrix
       for (int index = 0; index < MatB.row; index++) {
@@ -286,8 +229,10 @@ public:
       std::cout << "Cannot perform." << std::endl;
     } else {
       // check if matrix size is 2^n
-      if (!ChechDoublePower(size))
+      if (!ChechDoublePower(size)) {
+        std::cout << "Must be n^2 matrix size." << std::endl;
         return;
+      }
 
       // resize the original matrix to fit the result
       this->SetSize(size, size);
@@ -305,23 +250,36 @@ int main(int argc, char **argv) {
    *              #include <chrono>
   */
   chronoTime startTime, endTime;
-  startTime = std::chrono::system_clock::now();
 
   srand(time(NULL));
-  unsigned int userSize = 8192;
+  unsigned int userSize = 0;
+  std::cout << "Size of square matrix: ";
+  std::cin >> userSize;
+
+  unsigned int selection;
+  std::cout << "Select algorithm: 1 for Naive, 2 for Strassen";
+  std::cin >> selection;
+
   matrix<int> MatA(userSize, userSize);
   MatA.SetRandomValue();
 
   matrix<int> MatB(userSize, userSize);
   MatB.SetRandomValue();
 
-  matrix<int> MatC(userSize, userSize);
-  MatC.StrassenMultiply(MatA, MatB);
+  startTime = std::chrono::system_clock::now();
 
-  /* matrix<int> MatD(4, 4);
-  MatD.BasicMultiply(MatA, MatB);
-  MatD.Print(); */
-
+  switch (selection) {
+  case 1: {
+    matrix<int> MatD(userSize,userSize);
+    MatD.BasicMultiply(MatA, MatB);
+    break;
+  }
+  case 2:{
+    matrix<int> MatC(userSize, userSize);
+    MatC.StrassenMultiply(MatA, MatB);
+    break;
+  }
+  }
   endTime = std::chrono::system_clock::now();
 
   std::chrono::duration<double> elapsed_seconds = endTime - startTime;
