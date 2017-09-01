@@ -66,7 +66,7 @@ public:
     }
   }
   // read value from file to test
-  T **ReadValueFromFile(unsigned int size) {
+  T **ReadValueFromFile(const unsigned int &size) {
     // create new matrix value
     T **Matrix = new T *[size];
     for (unsigned int ikimashou = 0; ikimashou < size; ikimashou++) {
@@ -220,8 +220,7 @@ public:
       for (int index = 0; index < newSize; index++) {
         for (int ikimashou = 0; ikimashou < newSize; ikimashou++) {
           // top left submatrix
-          this->data[index][ikimashou] =
-              MatC11.data[index][ikimashou];
+          this->data[index][ikimashou] = MatC11.data[index][ikimashou];
           // top right matrix
           this->data[index][ikimashou + newSize] =
               MatC12.data[index][ikimashou];
@@ -267,6 +266,145 @@ public:
       this->StrassenMultiplyCore(MatA, MatB);
     }
   }
+  void ParallelAdd(const matrix &MatB) {
+    if (MatB.row == 1)
+      this->data[0][0] += MatB.data[0][0];
+    else {
+      unsigned int newSize = MatB.row / 2;
+      matrix MatB11(newSize, newSize), MatB12(newSize, newSize),
+          MatB21(newSize, newSize), MatB22(newSize, newSize),
+
+          //***********************************************//
+
+          MatA11(newSize, newSize), MatA12(newSize, newSize),
+          MatA21(newSize, newSize), MatA22(newSize, newSize);
+
+      for (int index = 0; index < newSize; index++) {
+        for (int ikimashou = 0; ikimashou < newSize; ikimashou++) {
+
+          // top left
+          MatB11.data[index][ikimashou] = MatB.data[index][ikimashou];
+          MatA11.data[index][ikimashou] = this->data[index][ikimashou];
+
+          // top right
+          MatB12.data[index][ikimashou] = MatB.data[index][ikimashou + newSize];
+          MatA12.data[index][ikimashou] =
+              this->data[index][ikimashou + newSize];
+
+          // bottom left
+          MatB21.data[index][ikimashou] = MatB.data[index + newSize][ikimashou];
+          MatA21.data[index][ikimashou] =
+              this->data[index + newSize][ikimashou];
+
+          // bottom right
+          MatB22.data[index][ikimashou] =
+              MatB.data[index + newSize][ikimashou + newSize];
+          MatA22.data[index][ikimashou] =
+              this->data[index + newSize][ikimashou + newSize];
+        }
+      }
+      MatB11.ParallelAdd(MatA11);
+      MatB12.ParallelAdd(MatA12);
+      MatB21.ParallelAdd(MatA21);
+      MatB22.ParallelAdd(MatA22);
+
+      for (int index = 0; index < newSize; index++) {
+        for (int ikimashou = 0; ikimashou < newSize; ikimashou++) {
+          // top left submatrix
+          this->data[index][ikimashou] = MatB11.data[index][ikimashou];
+          // top right matrix
+          this->data[index][ikimashou + newSize] =
+              MatB12.data[index][ikimashou];
+          // bottom left matrix
+          this->data[index + newSize][ikimashou] =
+              MatB21.data[index][ikimashou];
+          // bottom right matrix
+          this->data[index + newSize][ikimashou + newSize] =
+              MatB22.data[index][ikimashou];
+        }
+      }
+    }
+  }
+  void ParallelMultiply(const matrix &MatA, const matrix &MatB) {
+    if (MatA.row == 1)
+      this->data[0][0] = MatA.data[0][0] * MatB.data[0][0];
+    else {
+      unsigned int newSize = MatB.row / 2;
+      matrix MatB11(newSize, newSize), MatB12(newSize, newSize),
+          MatB21(newSize, newSize), MatB22(newSize, newSize),
+
+          //***********************************************//
+
+          MatA11(newSize, newSize), MatA12(newSize, newSize),
+          MatA21(newSize, newSize), MatA22(newSize, newSize),
+
+          //***********************************************//
+
+          MatT(MatB.row, MatB.row), MatT11(newSize, newSize),
+          MatT12(newSize, newSize), MatT21(newSize, newSize),
+          MatT22(newSize, newSize),
+
+          //***********************************************//
+
+          MatC11(newSize, newSize), MatC12(newSize, newSize),
+          MatC21(newSize, newSize), MatC22(newSize, newSize);
+
+      for (int index = 0; index < newSize; index++) {
+        for (int ikimashou = 0; ikimashou < newSize; ikimashou++) {
+
+          // top left
+          MatB11.data[index][ikimashou] = MatB.data[index][ikimashou];
+          MatA11.data[index][ikimashou] = MatA.data[index][ikimashou];
+
+          // top right
+          MatB12.data[index][ikimashou] = MatB.data[index][ikimashou + newSize];
+          MatA12.data[index][ikimashou] = MatA.data[index][ikimashou + newSize];
+
+          // bottom left
+          MatB21.data[index][ikimashou] = MatB.data[index + newSize][ikimashou];
+          MatA21.data[index][ikimashou] = MatA.data[index + newSize][ikimashou];
+
+          // bottom right
+          MatB22.data[index][ikimashou] =
+              MatB.data[index + newSize][ikimashou + newSize];
+          MatA22.data[index][ikimashou] =
+              MatA.data[index + newSize][ikimashou + newSize];
+        }
+      }
+
+      MatC11.ParallelMultiply(MatA11, MatB11);
+      MatC12.ParallelMultiply(MatA11, MatB12);
+      MatC21.ParallelMultiply(MatA21, MatB11);
+      MatC22.ParallelMultiply(MatA21, MatB12);
+      MatT11.ParallelMultiply(MatA12, MatB21);
+      MatT12.ParallelMultiply(MatA12, MatB22);
+      MatT21.ParallelMultiply(MatA22, MatB21);
+      MatT22.ParallelMultiply(MatA22, MatB22);
+
+      for (int index = 0; index < newSize; index++) {
+        for (int ikimashou = 0; ikimashou < newSize; ikimashou++) {
+          // top left submatrix
+          this->data[index][ikimashou] = MatC11.data[index][ikimashou];
+          MatT.data[index][ikimashou] = MatT11.data[index][ikimashou];
+          // top right matrix
+          this->data[index][ikimashou + newSize] =
+              MatC12.data[index][ikimashou];
+          MatT.data[index][ikimashou + newSize] = MatT12.data[index][ikimashou];
+          // bottom left matrix
+          this->data[index + newSize][ikimashou] =
+              MatC21.data[index][ikimashou];
+          MatT.data[index + newSize][ikimashou] = MatT21.data[index][ikimashou];
+          // bottom right matrix
+          this->data[index + newSize][ikimashou + newSize] =
+              MatC22.data[index][ikimashou];
+          MatT.data[index + newSize][ikimashou + newSize] =
+              MatT22.data[index][ikimashou];
+        }
+      }
+
+      this->ParallelAdd(MatT);
+    }
+  }
 };
 
 int main(int argc, char **argv) {
@@ -278,16 +416,7 @@ int main(int argc, char **argv) {
   chronoTime startTime, endTime;
 
   srand(time(NULL));
-  unsigned int userSize = 1024;
-  unsigned int selection = 2;
-  std::cin.clear();
-  /*/====================------USER_SELECTION PART------====================//
-  std::cout << "Size of square matrix: ";
-  std::cin >> userSize;
-
-  std::cout << "Select algorithm: 1 for Naive, 2 for Strassen: ";
-  std::cin >> selection;
-  //==================------END USER_SELECTION PART------==================/*/
+  unsigned int userSize = 128;
 
   matrix<int> MatA(userSize, userSize);
   MatA.SetValue(MatA.ReadValueFromFile(userSize), userSize, userSize);
@@ -299,24 +428,37 @@ int main(int argc, char **argv) {
   // MatB.SetRandomValue();
   // MatB.Print();
 
-  //
+  // basic algorithm computing
   startTime = std::chrono::system_clock::now();
 
-  switch (selection) {
-  case 1: {
-    matrix<int> MatD(userSize, userSize);
-    MatD.BasicMultiply(MatA, MatB);
-    break;
-  }
-  case 2: {
-    matrix<int> MatC(userSize, userSize);
-    MatC.StrassenMultiply(MatA, MatB);
-    break;
-  }
-  }
+  matrix<int> MatD(userSize, userSize);
+  MatD.BasicMultiply(MatA, MatB);
+
   endTime = std::chrono::system_clock::now();
 
   std::chrono::duration<double> elapsed_seconds = endTime - startTime;
+  std::cout << "Elapsed time: " << elapsed_seconds.count() << "s\n";
+
+  // strassen algorithm computing
+  startTime = std::chrono::system_clock::now();
+
+  matrix<int> MatC(userSize, userSize);
+  MatC.StrassenMultiply(MatA, MatB);
+
+  endTime = std::chrono::system_clock::now();
+
+  elapsed_seconds = endTime - startTime;
+  std::cout << "Elapsed time: " << elapsed_seconds.count() << "s\n";
+
+  // parallel algorithm computing
+  startTime = std::chrono::system_clock::now();
+
+  matrix<int> MatE(userSize, userSize);
+  MatE.ParallelMultiply(MatA, MatB);
+
+  endTime = std::chrono::system_clock::now();
+
+  elapsed_seconds = endTime - startTime;
   std::cout << "Elapsed time: " << elapsed_seconds.count() << "s\n";
   //*/
   system("pause");
