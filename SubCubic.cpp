@@ -14,6 +14,8 @@
 #include <ctime>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
+#include <string>
 
 #define chronoTime std::chrono::time_point<std::chrono::system_clock>
 
@@ -56,8 +58,34 @@ public:
       }
     }
   }
-  unsigned int GetRow() { return row; }
-  unsigned int GetCol() { return col; }
+  void SetValue(T **ReadValue, unsigned int ReadRow, unsigned int ReadCol) {
+    for (int index = 0; index < row; index++) {
+      for (int ikimashou = 0; ikimashou < col; ikimashou++) {
+        data[index][ikimashou] = ReadValue[index][ikimashou];
+      }
+    }
+  }
+  // read value from file to test
+  T **ReadValueFromFile(unsigned int size) {
+    // create new matrix value
+    T **Matrix = new T *[size];
+    for (unsigned int ikimashou = 0; ikimashou < size; ikimashou++) {
+      Matrix[ikimashou] = new T[size];
+    }
+
+    // read file
+    std::string ReadValue;
+    for (unsigned int index = 0; index < size; index++) {
+      std::getline(std::cin, ReadValue);
+      std::stringstream read_detail(ReadValue);
+      for (unsigned int step = 0; step < size; step++) {
+        read_detail >> Matrix[index][step];
+      }
+    }
+    // skip last blank line
+    std::getline(std::cin, ReadValue);
+    return Matrix;
+  }
   // print matrix value on screen
   void Print() {
     for (int index = 0; index < row; index++) {
@@ -156,7 +184,9 @@ public:
 
       // according to Strassen work, he found there are 7 equations to calculate
       // that is able to multiply matrix
-      matrix P0(newSize, newSize), P1(newSize, newSize), P2(newSize, newSize), P3(newSize, newSize), P4(newSize, newSize), P5(newSize, newSize), P6(newSize, newSize);
+      matrix P0(newSize, newSize), P1(newSize, newSize), P2(newSize, newSize),
+          P3(newSize, newSize), P4(newSize, newSize), P5(newSize, newSize),
+          P6(newSize, newSize);
 
       // P0 = A11*(B12-B22) //
       P0.StrassenMultiplyCore(MatA11, MatB12.Subtract(MatB22));
@@ -179,22 +209,19 @@ public:
       // P6 = (A11-A21)*(B11+B12) //
       P6.StrassenMultiplyCore(MatA11.Subtract(MatA21), MatB11.Add(MatB12));
 
-
       // 4 submatrices of result matrix are calculated as below
       // how did Strassen think?
       MatC11 = ((P4.Add(P3)).Subtract(P1)).Add(P5);
-
       MatC12 = P0.Add(P1);
-
       MatC21 = P2.Add(P3);
-
       MatC22 = ((P4.Add(P0)).Subtract(P2)).Subtract(P6);
 
       // assign 4 submatrices to the result matrix
       for (int index = 0; index < newSize; index++) {
         for (int ikimashou = 0; ikimashou < newSize; ikimashou++) {
           // top left submatrix
-          this->data[index][ikimashou] = MatC11.data[index][ikimashou];
+          this->data[index][ikimashou] =
+              MatC11.data[index][ikimashou];
           // top right matrix
           this->data[index][ikimashou + newSize] =
               MatC12.data[index][ikimashou];
@@ -251,25 +278,29 @@ int main(int argc, char **argv) {
   chronoTime startTime, endTime;
 
   srand(time(NULL));
-  unsigned int userSize = 2048;
+  unsigned int userSize = 1024;
+  unsigned int selection = 2;
+  std::cin.clear();
   /*/====================------USER_SELECTION PART------====================//
   std::cout << "Size of square matrix: ";
   std::cin >> userSize;
 
-  unsigned int selection;
   std::cout << "Select algorithm: 1 for Naive, 2 for Strassen: ";
   std::cin >> selection;
   //==================------END USER_SELECTION PART------==================/*/
 
-  matrix<float> MatA(userSize, userSize);
-  MatA.SetRandomValue();
-  MatA.Print();
+  matrix<int> MatA(userSize, userSize);
+  MatA.SetValue(MatA.ReadValueFromFile(userSize), userSize, userSize);
+  // MatA.SetRandomValue();
+  // MatA.Print();
 
-  matrix<float> MatB(userSize, userSize);
-  MatB.SetRandomValue();
-  MatB.Print();
+  matrix<int> MatB(userSize, userSize);
+  MatB.SetValue(MatB.ReadValueFromFile(userSize), userSize, userSize);
+  // MatB.SetRandomValue();
+  // MatB.Print();
 
-  /*startTime = std::chrono::system_clock::now();
+  //
+  startTime = std::chrono::system_clock::now();
 
   switch (selection) {
   case 1: {
@@ -286,6 +317,8 @@ int main(int argc, char **argv) {
   endTime = std::chrono::system_clock::now();
 
   std::chrono::duration<double> elapsed_seconds = endTime - startTime;
-  std::cout << "Elapsed time: " << elapsed_seconds.count() << "s\n";*/
+  std::cout << "Elapsed time: " << elapsed_seconds.count() << "s\n";
+  //*/
+  system("pause");
   return 0;
 }
