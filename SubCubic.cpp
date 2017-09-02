@@ -405,6 +405,67 @@ public:
       this->ParallelAdd(MatT);
     }
   }
+  void ShiftLeftArray(T *array, int size, int shiftNum) {
+    while (shiftNum-- > 0) { // move value to the left shiftNun times
+      T temporary = array[0];
+      for (int index = 0; index < size - 1; ++index) {
+        // assign right value to the left
+        array[index] = array[index + 1];
+      }
+      // assign begin value to last
+      array[size - 1] = temporary;
+    }
+  }
+  void ShiftUpColumn(int stableCol, int shiftNum, int size) {
+    while (shiftNum-- > 0) { // move value to the left shiftNun times
+      T temporary = this->data[0][stableCol];
+      for (int index = 0; index < size - 1; ++index) {
+        // assign underneath value to above
+        this->data[index][stableCol] = this->data[index + 1][stableCol];
+      }
+      // assign head value to tail
+      this->data[size - 1][stableCol] = temporary;
+    }
+  }
+  void MeshMultiply(matrix MatA, matrix MatB, int size) {
+    // completely don't understand???
+
+    // OK, first assign all value to 0
+    for (int index = 0; index < size; ++index) {
+      for (int step = 0; step < size; ++step) {
+        this->data[index][step] = 0;
+      }
+    }
+    // shift "index" row of MatA to the left "index" column
+    for (int index = 0; index < size; ++index) {
+      ShiftLeftArray(MatA.data[index], size, index);
+    }
+    // shift "index" column of MatA to the north "index" row
+    for (int index = 0; index < size; ++index) {
+      MatB.ShiftUpColumn(index, index, size);
+    }
+
+    // with each time in "size" change
+    // *multiply two input matrix and assgin to the original
+    // *shift left MatA
+    // *shift up MatB
+    // Why???
+    for (int ten = 0; ten < size; ++ten) {
+      for (int naka = 0; naka < size; ++naka) {
+        for (int chi = 0; chi < size; ++chi) {
+          this->data[naka][chi] += MatA.data[naka][chi] * MatB.data[naka][chi];
+        }
+      }
+
+      for (int naka = 0; naka < size; ++naka) {
+        ShiftLeftArray(MatA.data[naka], size, 1);
+      }
+
+      for (int naka = 0; naka < size; ++naka) {
+        MatB.ShiftUpColumn(naka, 1, size);
+      }
+    }
+  }
 };
 
 int main(int argc, char **argv) {
@@ -431,10 +492,12 @@ int main(int argc, char **argv) {
   // basic algorithm computing
   startTime = std::chrono::system_clock::now();
 
+  std::cout << "Naive algorithm" << std::endl;
   matrix<int> MatD(userSize, userSize);
   MatD.BasicMultiply(MatA, MatB);
 
   endTime = std::chrono::system_clock::now();
+  // MatD.Print();
 
   std::chrono::duration<double> elapsed_seconds = endTime - startTime;
   std::cout << "Elapsed time: " << elapsed_seconds.count() << "s\n";
@@ -442,6 +505,7 @@ int main(int argc, char **argv) {
   // strassen algorithm computing
   startTime = std::chrono::system_clock::now();
 
+  std::cout << "Strassen algorithm" << std::endl;
   matrix<int> MatC(userSize, userSize);
   MatC.StrassenMultiply(MatA, MatB);
 
@@ -453,6 +517,7 @@ int main(int argc, char **argv) {
   // parallel algorithm computing
   startTime = std::chrono::system_clock::now();
 
+  std::cout << "Parallel algorithm" << std::endl;
   matrix<int> MatE(userSize, userSize);
   MatE.ParallelMultiply(MatA, MatB);
 
@@ -460,7 +525,18 @@ int main(int argc, char **argv) {
 
   elapsed_seconds = endTime - startTime;
   std::cout << "Elapsed time: " << elapsed_seconds.count() << "s\n";
+
+  // cannon algorithm computing
+  startTime = std::chrono::system_clock::now();
+
+  matrix<int> MatF(userSize, userSize);
+  MatF.MeshMultiply(MatA, MatB, userSize);
+
+  endTime = std::chrono::system_clock::now();
+  // MatF.Print();
+
+  elapsed_seconds = endTime - startTime;
+  std::cout << "Elapsed time: " << elapsed_seconds.count() << "s\n";
   //*/
-  system("pause");
   return 0;
 }

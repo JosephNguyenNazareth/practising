@@ -1,5 +1,21 @@
 # MATRIX MULTIPLICATION
 
+## Matrix Iterative algorithm
+
+## Divide and Conquer algorithm
+
+## Cannon's algorithm
+#### a) Overview
+Naive algorithm costs O(n^3). Thanks to Cannon algorithm, we can reduce the complexity down (n^3)/p with: p is the number of block after partition.
+#### a) Description
+This algorithm is a paralel algorithm, so it is faster than normal algorithm. As we know, normal matrix multiplication algorithm is a sequential algorithm, it uses a process to run, but Cannon's algorithm uses many process to execute. Tasks of this algorithm is: Shift left row, shift up collumm, caculate the product a[i][j]* b[i][j] after shift and store in c[i][j], add sum of temp matrix to create result. Example, we uses process 0 to add temp matrix and caculate a[i][j]*b[i][j], process 1 to Shift left row, process 2 to Shift up collumm. Those process also communicate (send or receive) infomation between them.
+#### c) Implementation
+Cannon algorithm is implemented on C++, using package "chrono" to couting time with milisecond accuracy.
+#### d) Instruction
+We will use source code in file attach, but this algorithm is implemented by sequential algorithm. Sorry, I will give you the paralel algorithm of it as soon as posible.
+For best result, algorithms will read the same data from file. At command line, type "SubCubic" "<" "*test data file"; the programme will load data and get ready to compute.
+Waiting for result..
+
 ## Sub-cubic Algorithm
 ### 1. Strassen's Algorithm
 
@@ -15,8 +31,6 @@ Strassen algorithm is implemented on C++, using package "chrono" to couting time
 At first, type in source code the size of the matrix (must be 2 exponent), then compile the programme.
 For best result, algorithms will read the same data from file. At command line, type "SubCubic" "<" "*test data file"; the programme will load data and get ready to compute.
 Waiting for result..
-
-
 
 ### 2. Coppersmith - Winograd algorithm
 
