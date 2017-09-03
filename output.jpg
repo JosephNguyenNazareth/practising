@@ -1,50 +1,50 @@
 --- MATRIX MULTIPLICATION ALGORITHMS ---
 	+ Iteractive method
 		+ int:
-			+ Test case 0: 23
-			+ Test case 1: 23
-			+ Test case 2: 22
-			+ Test case 3: 22
+			+ Test case 0: 21.7414
+			+ Test case 1: 22.2691
+			+ Test case 2: 21.7813
+			+ Test case 3: 21.6648
 		+ float: 
-			+ Test case 0: 22
-			+ Test case 1: 22
-			+ Test case 2: 22
-			+ Test case 3: 22
+			+ Test case 0: 21.3113
+			+ Test case 1: 21.3232
+			+ Test case 2: 22.8603
+			+ Test case 3: 26.6328
 		+ double: 
-			+ Test case 0: 25
-			+ Test case 1: 25
-			+ Test case 2: 25
-			+ Test case 3: 26
+			+ Test case 0: 28.9528
+			+ Test case 1: 25.8666
+			+ Test case 2: 25.3912
+			+ Test case 3: 25.4743
 	+ Divide and Conquer
 		+ int:
-			+ Test case 0: 83
-			+ Test case 1: 83
-			+ Test case 2: 83
-			+ Test case 3: 82
+			+ Test case 0: 79.8447
+			+ Test case 1: 80.6876
+			+ Test case 2: 79.9207
+			+ Test case 3: 79.831
 		+ float: 
-			+ Test case 0: 82
-			+ Test case 1: 82
-			+ Test case 2: 83
-			+ Test case 3: 83
+			+ Test case 0: 82.107
+			+ Test case 1: 80.9581
+			+ Test case 2: 80.8555
+			+ Test case 3: 81.0875
 		+ double: 
-			+ Test case 0: 86
-			+ Test case 1: 86
-			+ Test case 2: 86
-			+ Test case 3: 86
+			+ Test case 0: 82.1466
+			+ Test case 1: 81.5209
+			+ Test case 2: 84.6608
+			+ Test case 3: 81.6584
 	+ Strassen:
 		+ int:
-			+ Test case 0: 148
-			+ Test case 1: 148
-			+ Test case 2: 148
-			+ Test case 3: 148
+			+ Test case 0: 145.347
+			+ Test case 1: 146.589
+			+ Test case 2: 144.38
+			+ Test case 3: 147.262
 		+ float:
-			+ Test case 0: 144
-			+ Test case 1: 144
-			+ Test case 2: 144
-			+ Test case 3: 145
+			+ Test case 0: 150.948
+			+ Test case 1: 150.098
+			+ Test case 2: 150.266
+			+ Test case 3: 149.804
 		+ double:
-			+ Test case 0: 152
-			+ Test case 1: 152
-			+ Test case 2: 152
-			+ Test case 3: 152
+			+ Test case 0: 144.851
+			+ Test case 1: 144.985
+			+ Test case 2: 144.927
+			+ Test case 3: 144.885
 
