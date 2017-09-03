@@ -1,0 +1,50 @@
+--- MATRIX MULTIPLICATION ALGORITHMS ---
+	+ Iteractive method
+		+ int:
+			+ Test case 0: 23
+			+ Test case 1: 23
+			+ Test case 2: 22
+			+ Test case 3: 22
+		+ float: 
+			+ Test case 0: 22
+			+ Test case 1: 22
+			+ Test case 2: 22
+			+ Test case 3: 22
+		+ double: 
+			+ Test case 0: 25
+			+ Test case 1: 25
+			+ Test case 2: 25
+			+ Test case 3: 26
+	+ Divide and Conquer
+		+ int:
+			+ Test case 0: 83
+			+ Test case 1: 83
+			+ Test case 2: 83
+			+ Test case 3: 82
+		+ float: 
+			+ Test case 0: 82
+			+ Test case 1: 82
+			+ Test case 2: 83
+			+ Test case 3: 83
+		+ double: 
+			+ Test case 0: 86
+			+ Test case 1: 86
+			+ Test case 2: 86
+			+ Test case 3: 86
+	+ Strassen:
+		+ int:
+			+ Test case 0: 148
+			+ Test case 1: 148
+			+ Test case 2: 148
+			+ Test case 3: 148
+		+ float:
+			+ Test case 0: 144
+			+ Test case 1: 144
+			+ Test case 2: 144
+			+ Test case 3: 145
+		+ double:
+			+ Test case 0: 152
+			+ Test case 1: 152
+			+ Test case 2: 152
+			+ Test case 3: 152
+

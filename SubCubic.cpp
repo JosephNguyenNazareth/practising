@@ -261,6 +261,7 @@ public:
 
       // resize the original matrix to fit the result
       this->SetSize(size, size);
+      std::cout << this->row;
 
       // go to the strassen algorithm
       this->StrassenMultiplyCore(MatA, MatB);
@@ -477,16 +478,16 @@ int main(int argc, char **argv) {
   chronoTime startTime, endTime;
 
   srand(time(NULL));
-  unsigned int userSize = 128;
+  unsigned int userSize = 4;
 
   matrix<int> MatA(userSize, userSize);
-  MatA.SetValue(MatA.ReadValueFromFile(userSize), userSize, userSize);
-  // MatA.SetRandomValue();
-  // MatA.Print();
+  // MatA.SetValue(MatA.ReadValueFromFile(userSize), userSize, userSize);
+  MatA.SetRandomValue();
+  MatA.Print();
 
   matrix<int> MatB(userSize, userSize);
-  MatB.SetValue(MatB.ReadValueFromFile(userSize), userSize, userSize);
-  // MatB.SetRandomValue();
+  // MatB.SetValue(MatB.ReadValueFromFile(userSize), userSize, userSize);
+  MatB.SetRandomValue();
   // MatB.Print();
 
   // basic algorithm computing
@@ -527,6 +528,7 @@ int main(int argc, char **argv) {
   std::cout << "Elapsed time: " << elapsed_seconds.count() << "s\n";
 
   // cannon algorithm computing
+  std::cout << "Cannon algorithm" << std::endl;
   startTime = std::chrono::system_clock::now();
 
   matrix<int> MatF(userSize, userSize);
@@ -536,7 +538,9 @@ int main(int argc, char **argv) {
   // MatF.Print();
 
   elapsed_seconds = endTime - startTime;
+  MatA.Print();
   std::cout << "Elapsed time: " << elapsed_seconds.count() << "s\n";
+
   //*/
   return 0;
 }
